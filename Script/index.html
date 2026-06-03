@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bike Buyers Analytics & Management</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .sidebar { background-color: #212529; min-height: 100vh; color: white; }
+    .nav-link { color: #adb5bd; cursor: pointer; }
+    .nav-link.active { color: #fff; background-color: #0d6efd; border-radius: 4px; }
+    .card-stat { border-left: 5px solid #0d6efd; }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    .chart-container { position: relative; height: 250px; width: 100%; }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-3 col-lg-2 sidebar p-3 d-flex flex-column">
+      <h5 class="text-center py-3"><i class="fa-solid fa-bicycle me-2"></i>Bike App by Syifa Nalurita Azahra</h5>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item mb-2">
+          <a class="nav-link active" id="menu-dashboard" onclick="switchPage('dashboard')">
+            <i class="fa-solid fa-chart-pie me-2"></i> Dashboard
+          </a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link" id="menu-data" onclick="switchPage('data')">
+            <i class="fa-solid fa-table me-2"></i> Manajemen Data
+          </a>
+        </li>
+      </ul>
+      <hr>
+      <div class="text-muted small text-center">Spreadsheet Sync v1.0</div>
+    </div>
+
+    <div class="col-md-9 col-lg-10 p-4">
+      
+      <div id="page-dashboard" class="page-section active">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Dashboard Analitik</h1>
+          <button class="btn btn-outline-primary btn-sm" onclick="loadDashboard()"><i class="fa-solid fa-sync me-1"></i> Refresh</button>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="card card-stat shadow-sm p-3 bg-white">
+              <div class="text-muted small uppercase font-weight-bold">Total Responden</div>
+              <div class="h3 font-weight-bold" id="stat-total">0</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card card-stat shadow-sm p-3 bg-white" style="border-left-color: #2ec4b6;">
+              <div class="text-muted small">Membeli Sepeda (Yes)</div>
+              <div class="h3 font-weight-bold text-success" id="stat-yes">0</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card card-stat shadow-sm p-3 bg-white" style="border-left-color: #e71d36;">
+              <div class="text-muted small">Tidak Membeli (No)</div>
+              <div class="h3 font-weight-bold text-danger" id="stat-no">0</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card card-stat shadow-sm p-3 bg-white" style="border-left-color: #ff9f1c;">
+              <div class="text-muted small">Rata-rata Pendapatan</div>
+              <div class="h3 font-weight-bold" id="stat-income">$0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="card shadow-sm bg-white p-3">
+              <h6>Proporsi Pembelian Sepeda</h6>
+              <div class="chart-container"><canvas id="chartPurchase"></canvas></div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="card shadow-sm bg-white p-3">
+              <h6>Distribusi Berdasarkan Wilayah</h6>
+              <div class="chart-container"><canvas id="chartRegion"></canvas></div>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4">
+            <div class="card shadow-sm bg-white p-3">
+              <h6>Distribusi Pendidikan</h6>
+              <div class="chart-container"><canvas id="chartEducation"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="page-data" class="page-section">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Manajemen Data Responden</h1>
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fa-solid fa-plus me-1"></i> Tambah Responden
+          </button>
+        </div>
+
+        <div class="card shadow-sm bg-white p-3">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle" id="dataTable">
+              <thead class="table-dark">
+                <tr id="tableHeaders"></tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr><td colspan="100%" class="text-center">Memuat data dari Google Sheets...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="addForm" onsubmit="submitForm(event)">
+        <div class="modal-header">
+          <h5 class="modal-title">Tambah Responden Baru</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Marital Status</label>
+              <select class="form-select" name="Marital Status" required>
+                <option value="M">Married (M)</option>
+                <option value="S">Single (S)</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Gender</label>
+              <select class="form-select" name="Gender" required>
+                <option value="M">Male (M)</option>
+                <option value="F">Female (F)</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Income (USD)</label>
+              <input type="number" class="form-control" name="Income" placeholder="e.g. 40000" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Children</label>
+              <input type="number" class="form-control" name="Children" min="0" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Education</label>
+              <select class="form-select" name="Education" required>
+                <option value="Bachelors">Bachelors</option>
+                <option value="Partial College">Partial College</option>
+                <option value="High School">High School</option>
+                <option value="Graduate Degree">Graduate Degree</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Occupation</label>
+              <input type="text" class="form-control" name="Occupation" placeholder="e.g. Professional" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Home Owner</label>
+              <select class="form-select" name="Home Owner" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Cars</label>
+              <input type="number" class="form-control" name="Cars" min="0" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Commute Distance</label>
+              <input type="text" class="form-control" name="Commute Distance" placeholder="e.g. 0-1 Miles" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Region</label>
+              <select class="form-select" name="Region" required>
+                <option value="Europe">Europe</option>
+                <option value="Pacific">Pacific</option>
+                <option value="North America">North America</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-control" name="Age" min="1" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Purchased Bike</label>
+              <select class="form-select" name="Purchased Bike" required>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">Simpan Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+  let charts = {};
+
+  // Inisialisasi awal saat halaman dimuat
+  document.addEventListener("DOMContentLoaded", function() {
+    loadDashboard();
+    loadTableData();
+  });
+
+  // Navigasi Halaman Menu
+  function switchPage(pageId) {
+    document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.getElementById('menu-' + pageId).classList.add('active');
+  }
+
+  // Ambil Data Dashboard dari Google Sheets
+  function loadDashboard() {
+    google.script.run.withSuccessHandler(function(res) {
+      document.getElementById('stat-total').innerText = res.totalData;
+      document.getElementById('stat-yes').innerText = res.purchasedYes;
+      document.getElementById('stat-no').innerText = res.purchasedNo;
+      document.getElementById('stat-income').innerText = '$' + res.avgIncome.toLocaleString('en-US', {maximumFractionDigits: 2});
+      
+      renderCharts(res);
+    }).getDashboardData();
+  }
+
+  // Render Grafik Menggunakan Chart.js
+  function renderCharts(data) {
+    if(charts.purchase) charts.purchase.destroy();
+    if(charts.region) charts.region.destroy();
+    if(charts.education) charts.education.destroy();
+
+    // 1. Chart Purchase
+    charts.purchase = new Chart(document.getElementById('chartPurchase'), {
+      type: 'pie',
+      data: {
+        labels: ['Yes', 'No'],
+        datasets: [{ data: [data.purchasedYes, data.purchasedNo], backgroundColor: ['#2ec4b6', '#e71d36'] }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // 2. Chart Region
+    charts.region = new Chart(document.getElementById('chartRegion'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(data.regionDist),
+        datasets: [{ label: 'Jumlah', data: Object.values(data.regionDist), backgroundColor: '#0d6efd' }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // 3. Chart Education
+    charts.education = new Chart(document.getElementById('chartEducation'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(data.educationDist),
+        datasets: [{ data: Object.values(data.educationDist), backgroundColor: ['#ff9f1c','#4cc9f0','#7209b7','#4a4e69'] }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+
+  // Ambil data untuk Tabel
+  function loadTableData() {
+    google.script.run.withSuccessHandler(function(res) {
+      const headerRow = document.getElementById('tableHeaders');
+      const bodyRow = document.getElementById('tableBody');
+      
+      // Render Header + Kolom Aksi
+      headerRow.innerHTML = res.headers.map(h => `<th>${h}</th>`).join('') + '<th>Aksi</th>';
+      
+      // Render Baris Data
+      if(res.rows.length === 0) {
+        bodyRow.innerHTML = `<tr><td colspan="100%" class="text-center">Tidak ada data.</td></tr>`;
+        return;
+      }
+
+      const idIdx = res.headers.indexOf('ID');
+      bodyRow.innerHTML = res.rows.map(row => {
+        let cells = row.map(cell => `<td>${cell}</td>`).join('');
+        let actionBtn = `<td><button class="btn btn-sm btn-danger" onclick="deleteItem('${row[idIdx]}')"><i class="fa-solid fa-trash"></i></button></td>`;
+        return `<tr>${cells}${actionBtn}</tr>`;
+      }).join('');
+
+    }).getAllData();
+  }
+
+  // Handle Submit Form Tambah Data
+  function submitForm(e) {
+    e.preventDefault();
+    document.getElementById('btnSubmit').disabled = true;
+    
+    const formData = {};
+    const inputs = document.getElementById('addForm').querySelectorAll('input, select');
+    inputs.forEach(input => {
+      formData[input.name] = input.value;
+    });
+
+    // Format Income ke tipe nominal string '$40,000.00' sebelum disimpan agar seragam dengan data lama
+    if(formData['Income']) {
+      let incomeVal = parseFloat(formData['Income']);
+      formData['Income'] = '$' + incomeVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    google.script.run.withSuccessHandler(function(res) {
+      alert(res.message);
+      document.getElementById('addForm').reset();
+      document.getElementById('btnSubmit').disabled = false;
+      
+      // Tutup Modal
+      const modalEl = document.getElementById('addModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      modal.hide();
+      
+      // Reload Data
+      loadDashboard();
+      loadTableData();
+    }).addRecord(formData);
+  }
+
+  // Handle Hapus Data
+  function deleteItem(id) {
+    if(confirm('Apakah Anda yakin ingin menghapus data dengan ID ' + id + '?')) {
+      google.script.run.withSuccessHandler(function(res) {
+        alert(res.message);
+        loadDashboard();
+        loadTableData();
+      }).deleteRecord(id);
+    }
+  }
+</script>
+</body>
+</html>
