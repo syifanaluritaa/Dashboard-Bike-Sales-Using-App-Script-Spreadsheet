@@ -15,7 +15,7 @@ Berikut adalah cuplikan visualisasi dan tata letak dari dashboard Bike Sales:
 </p>
 
 <p align="center">
-<img src="Images/Manajemen Data.png" alt="Dashboard Dark Mode" width="100%" style="border-radius: 8px; border: 1px solid #334155;">v
+<img src="Images/Manajemen Data.png" alt="Dashboard Dark Mode" width="100%" style="border-radius: 8px; border: 1px solid #334155;">
   <br>
   <em>Gambar 1.2: Bike Sales Manajemen Data Screenshot.</em>
 </p>
