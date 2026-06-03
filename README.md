@@ -8,8 +8,17 @@ Proyek ini adalah dashboard analisis data interaktif yang dirancang untuk melaca
 
 Berikut adalah cuplikan visualisasi dan tata letak dari dashboard Bike Sales:
 
-![Bike Sales Dashboard Screenshot](URL_LINK_FOTO_DASHBOARD_KAMU_DISINI)
-*Catatan: Ganti URL ini dengan link gambar screenshot dashboard milikmu.*
+<p align="center">
+  <img src="Images/Dashboard.png" alt="Dashboard Dark Mode" width="100%" style="border-radius: 8px; border: 1px solid #334155;">
+  <br>
+  <em>Gambar 1.1: Bike Sales Dashboard Screenshot.</em>
+</p>
+
+<p align="center">
+<img src="Images/Manajemen Data.png" alt="Dashboard Dark Mode" width="100%" style="border-radius: 8px; border: 1px solid #334155;">v
+  <br>
+  <em>Gambar 1.2: Bike Sales Manajemen Data Screenshot.</em>
+</p>
 
 ---
 
@@ -43,6 +52,8 @@ Bagian inti dari efisiensi dashboard ini digerakkan oleh skrip kustom **Google A
 
 ## 👤 Kontributor
 
-**Syifa alurita Azahra** - [GitHub Profile](https://github.com/syifanaluritaa)
+*Syifa Nalurita Azahra* - *[GitHub Profile](https://github.com/syifanaluritaa)*
+<br>
+*link : https://script.google.com/macros/s/AKfycbzcQ4Wh1oWrC9KYOozF5dVfGe9Nqll67DYQ9GtnWA3trDh-oueNtFwDREG3y57SeKjPog/exec*
 
 ---
